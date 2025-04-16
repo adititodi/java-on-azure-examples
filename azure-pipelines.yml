@@ -74,7 +74,7 @@ steps:
 - task: JavaToolInstaller@0
   inputs:
     versionSpec: '17'
-    jdkArchitecture: 'x64'
+    jdkArchitecture: 'x64'  # Ensure the architecture is specified
     javaHomeOption: 'JDKPath'
     jdkPath: '/usr/lib/jvm/java-17-openjdk'
 
