@@ -1,0 +1,90 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+# trigger:
+#   - main
+
+# pool:
+#   vmImage: 'ubuntu-latest'
+
+# variables:
+#   MAVEN_OPTS: "-Xmx1024m"
+#   SONAR_TOKEN: $(SONAR_TOKEN)  # Set this as a secret variable in pipeline settings
+
+# steps:
+#   - task: UseJava@1
+#     inputs:
+#       versionSpec: '17'
+#       jdkArchitecture: 'x64'
+#       distribution: 'Microsoft'
+
+#   - task: Maven@3
+#     inputs:
+#       mavenPomFile: 'pom.xml'
+#       goals: 'clean verify'
+#       options: '-DskipTests'
+#       javaHomeOption: 'Path'
+#       mavenVersionOption: 'Default'
+#       mavenAuthenticateFeed: false
+#     displayName: 'Build with Maven'
+
+#   - task: SonarCloudPrepare@1
+#     inputs:
+#       SonarCloud: 'SonarCloud Service Connection'
+#       organization: 'your-sonarcloud-org'
+#       scannerMode: 'CLI'
+#       configMode: 'manual'
+#       cliProjectKey: 'your-project-key'
+#       cliProjectName: 'your-project-name'
+
+#   - task: Maven@3
+#     inputs:
+#       mavenPomFile: 'pom.xml'
+#       goals: 'verify sonar:sonar'
+#       options: '-DskipTests'
+#     displayName: 'Run SonarCloud Analysis'
+
+#   - task: PublishTestResults@2
+#     inputs:
+#       testResultsFiles: '**/surefire-reports/TEST-*.xml'
+#       testResultsFormat: 'JUnit'
+#     condition: succeededOrFailed()
+
+#   - task: PublishBuildArtifacts@1
+#     inputs:
+#       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+#       ArtifactName: 'drop'
+#       publishLocation: 'Container'
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  SONAR_TOKEN: $(SONAR_TOKEN)
+
+steps:
+- task: UseJavaVersion@1
+  inputs:
+    versionSpec: '17'
+    jdkArchitecture: 'x64'
+    addToPath: true
+
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'SonarCloud Service Connection'  # must match what you set earlier
+    organization: '321114110002'
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: '321114110002_java-ci-cd'
+    cliProjectName: 'JAVA CI CD'
+
+- script: mvn clean verify sonar:sonar -Dsonar.token=$(SONAR_TOKEN)
+  displayName: 'Maven Build + SonarCloud Analysis'
+
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
