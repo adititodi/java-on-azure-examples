@@ -57,6 +57,9 @@
 #       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
 #       ArtifactName: 'drop'
 #       publishLocation: 'Container'
+
+# 
+
 trigger:
 - main
 
@@ -74,15 +77,16 @@ steps:
 # Prepare SonarCloud Analysis
 - task: SonarCloudPrepare@1
   inputs:
-    SonarCloud: 'SonarQube Cloud'  # Replace with the name of your SonarCloud service connection
+    SonarCloud: 'SonarQube Cloud'
     organization: '321114110002'
     scannerMode: 'CLI'
     configMode: 'manual'
     cliProjectKey: '321114110002_JAVA-CI-CD'
     cliProjectName: 'JAVA CI CD'
 
-# Maven build + SonarCloud scan
+# Run Maven build + SonarCloud analysis in 'spring' folder
 - script: mvn clean verify sonar:sonar -Dsonar.token=$(SONAR_TOKEN)
+  workingDirectory: spring
   displayName: 'Maven Build + SonarCloud Analysis'
 
 # Publish results to SonarCloud
