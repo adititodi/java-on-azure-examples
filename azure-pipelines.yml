@@ -63,28 +63,29 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-variables:
-  SONAR_TOKEN: $(SONAR_TOKEN)
-
 steps:
+# Install Java 17
 - task: JavaToolInstaller@0
   inputs:
     versionSpec: '17'
     jdkArchitectureOption: 'x64'
     jdkSourceOption: 'PreInstalled'
 
+# Prepare SonarCloud Analysis
 - task: SonarCloudPrepare@1
   inputs:
-    SonarCloud: 'SonarQube Cloud'  # must match what you set earlier
+    SonarCloud: 'SonarQube Cloud'  # Replace with the name of your SonarCloud service connection
     organization: '321114110002'
     scannerMode: 'CLI'
     configMode: 'manual'
-    cliProjectKey: '321114110002_java-ci-cd'
+    cliProjectKey: '321114110002_JAVA-CI-CD'
     cliProjectName: 'JAVA CI CD'
 
+# Maven build + SonarCloud scan
 - script: mvn clean verify sonar:sonar -Dsonar.token=$(SONAR_TOKEN)
   displayName: 'Maven Build + SonarCloud Analysis'
 
+# Publish results to SonarCloud
 - task: SonarCloudPublish@1
   inputs:
     pollingTimeoutSec: '300'
