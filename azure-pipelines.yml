@@ -67,15 +67,15 @@ variables:
   SONAR_TOKEN: $(SONAR_TOKEN)
 
 steps:
-- task: UseJavaVersion@1
+- task: JavaToolInstaller@0
   inputs:
     versionSpec: '17'
     jdkArchitecture: 'x64'
-    addToPath: true
+    jdkSourceOption: 'PreInstalled'
 
 - task: SonarCloudPrepare@1
   inputs:
-    SonarCloud: 'SonarCloud Service Connection'  # must match what you set earlier
+    SonarCloud: 'SonarQube Cloud'  # must match what you set earlier
     organization: '321114110002'
     scannerMode: 'CLI'
     configMode: 'manual'
