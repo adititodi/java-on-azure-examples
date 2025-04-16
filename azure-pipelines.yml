@@ -67,32 +67,34 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  SONAR_TOKEN: $(SONAR_TOKEN)  # Ensure this is set in the Azure DevOps Variables section
+  SONAR_TOKEN: $(SONAR_TOKEN)
 
 steps:
-# Install Java 17
+# Step 1: Install Java 17 using the JavaToolInstaller task
 - task: JavaToolInstaller@0
   inputs:
     versionSpec: '17'
-    jdkArchitectureOption: 'x64'
-    jdkSourceOption: 'PreInstalled'
+    jdkArchitecture: 'x64'
+    javaHomeOption: 'JDKPath'
+    jdkPath: '/usr/lib/jvm/java-17-openjdk'
 
-# Prepare SonarCloud Analysis
+# Step 2: SonarCloud Preparation
 - task: SonarCloudPrepare@1
   inputs:
-    SonarCloud: 'SonarQube Cloud'  # This should match the name of your SonarQube Cloud service connection
-    organization: '321114110002'  # Replace with your SonarCloud organization
+    SonarCloud: 'SonarQube Cloud'
+    organization: '321114110002'
     scannerMode: 'CLI'
     configMode: 'manual'
-    cliProjectKey: '321114110002_JAVA-CI-CD'  # Replace with your SonarCloud project key
+    cliProjectKey: '321114110002_JAVA-CI-CD'
     cliProjectName: 'JAVA CI CD'
 
-# Run Maven build + SonarCloud analysis
-- script: mvn clean verify sonar:sonar -Dsonar.token=$(SONAR_TOKEN)
-  workingDirectory: spring  # Specify the folder where your pom.xml is located
+# Step 3: Trigger SonarCloud Analysis using Maven
+- script: |
+    mvn clean verify sonar:sonar -Dsonar.token=$(SONAR_TOKEN)
   displayName: 'Maven Build + SonarCloud Analysis'
 
-# Publish results to SonarCloud
+# Step 4: Wait for analysis to complete before continuing
 - task: SonarCloudPublish@1
   inputs:
-    pollingTimeoutSec: '300'
+    pollingTimeoutSec: '300'  # Waiting 5 minutes for the analysis to complete
+  displayName: 'Publish SonarCloud Analysis Results'
