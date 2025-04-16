@@ -74,9 +74,8 @@ steps:
 - task: JavaToolInstaller@0
   inputs:
     versionSpec: '17'
-    jdkArchitecture: 'x64'  # Ensure the architecture is specified
-    javaHomeOption: 'JDKPath'
-    jdkPath: '/usr/lib/jvm/java-17-openjdk'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
 
 # Step 2: SonarCloud Preparation
 - task: SonarCloudPrepare@1
